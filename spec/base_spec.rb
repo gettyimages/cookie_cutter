@@ -33,7 +33,7 @@ describe CookieCutter::Base do
       end
       cookie = CookieWithNoDomain.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwnd)[:domain].should be_nil
+      cookie_jar.metadata_for('cwnd')[:domain].should be_nil
     end
     it 'uses given domain when saving cookie' do
       class CookieWithDomain < CookieCutter::Base
@@ -42,7 +42,7 @@ describe CookieCutter::Base do
       end
       cookie = CookieWithDomain.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwd)[:domain].should == :all
+      cookie_jar.metadata_for('cwd')[:domain].should == :all
     end
   end
   describe 'lifetime' do
@@ -52,7 +52,7 @@ describe CookieCutter::Base do
       end
       cookie = CookieWithNoLifetimeSpecified.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwnls)[:expires].should be_nil
+      cookie_jar.metadata_for('cwnls')[:expires].should be_nil
     end
     it 'sets expires to now plus lifetime' do
       now = Time.now
@@ -64,7 +64,7 @@ describe CookieCutter::Base do
       end
       cookie = CookieWithLifetimeSpecified.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwls)[:expires].should be_within(0.01).of(now + lifetime)
+      cookie_jar.metadata_for('cwls')[:expires].should be_within(0.01).of(now + lifetime)
     end
     it 'sets expires to 20 years from now if made permanent!' do
       now = Time.now
@@ -74,7 +74,7 @@ describe CookieCutter::Base do
       end
       cookie = PermanentCookie.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:pc)[:expires].should be_within(0.01).of(20.years.from_now)
+      cookie_jar.metadata_for('pc')[:expires].should be_within(0.01).of(20.years.from_now)
     end
   end
   describe 'secure_requests_only' do
@@ -84,7 +84,7 @@ describe CookieCutter::Base do
       end
       cookie = CookieWithNoSecuritySpecified.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwnss)[:secure].should be_nil
+      cookie_jar.metadata_for('cwnss')[:secure].should be_nil
     end
     it 'sets secure flag when secure_requests_only is specified' do
       class CookieWithSecureRequestsOnly < CookieCutter::Base
@@ -93,7 +93,7 @@ describe CookieCutter::Base do
       end
       cookie = CookieWithSecureRequestsOnly.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwsro)[:secure].should be_true
+      cookie_jar.metadata_for('cwsro')[:secure].should be_true
     end
   end
   describe 'http_only' do
@@ -103,7 +103,7 @@ describe CookieCutter::Base do
       end
       cookie = ClassWithNoHttpOnly.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwnho)[:httponly].should be_nil
+      cookie_jar.metadata_for('cwnho')[:httponly].should be_nil
     end
     it 'sets httponly flag when http_only is specified' do
       class CookieWithHttpOnly < CookieCutter::Base
@@ -112,7 +112,7 @@ describe CookieCutter::Base do
       end
       cookie = CookieWithHttpOnly.new(cookie_jar)
       cookie.value = "my value"
-      cookie_jar.metadata_for(:cwho)[:httponly].should be_true
+      cookie_jar.metadata_for('cwho')[:httponly].should be_true
     end
   end
   describe 'delete!' do
@@ -126,10 +126,10 @@ describe CookieCutter::Base do
     let(:single_valued_cookie) { SingleValuedCookie.new(cookie_jar) }
     it 'should update the cookie jar when value is updated' do
       single_valued_cookie.value = "ordinary value"
-      cookie_jar[:svc].should == "ordinary value"
+      cookie_jar['svc'].should == "ordinary value"
     end
     it 'can be read via ordinary cookie jar' do
-      single_value_cookie = SingleValuedCookie.new(CookieCutter::TestSupport::FakeCookieJar.new({ svc: "preset value" }))
+      single_value_cookie = SingleValuedCookie.new(CookieCutter::TestSupport::FakeCookieJar.new({:svc => "preset value"}))
       single_value_cookie.value.should == "preset value"
     end
   end
@@ -137,7 +137,7 @@ describe CookieCutter::Base do
     let(:multi_valued_cookie) { MultiValuedCookie.new(cookie_jar) }
     it 'should update the cookie jar when an attribute is updated' do
       multi_valued_cookie.value1 = "myval"
-      cookie_jar[:mvc][:value1].should == "myval"
+      cookie_jar['mvc']['value1'].should == "myval"
     end
     it 'generates getters and setters for each attribute' do
       multi_valued_cookie.value1 = "myval1"
@@ -152,7 +152,7 @@ describe CookieCutter::Base do
     end
     it "can override stored attribute name with :store_as option" do
       multi_valued_cookie.value2 = "myval2"
-      cookie_jar[:mvc][:val2].should == "myval2"
+      cookie_jar['mvc']['val2'].should == "myval2"
     end
     describe 'attribute metadata' do
       it "should provide attributes array" do
@@ -163,8 +163,8 @@ describe CookieCutter::Base do
         MultiValuedCookie.attributes.find{|a| a.name == :value2}.should_not be_nil
       end
       it "should provide each attribute storage key as a symbol" do
-        MultiValuedCookie.attributes.find{|a| a.name == :value1}.storage_key.should == :value1
-        MultiValuedCookie.attributes.find{|a| a.name == :value2}.storage_key.should == :val2
+        MultiValuedCookie.attributes.find{|a| a.name == :value1}.storage_key.should == 'value1'
+        MultiValuedCookie.attributes.find{|a| a.name == :value2}.storage_key.should == 'val2'
       end
     end
   end

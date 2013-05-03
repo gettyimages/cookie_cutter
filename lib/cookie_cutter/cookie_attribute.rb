@@ -8,7 +8,7 @@ module CookieCutter
     end
 
     def storage_key
-      (@options[:store_as] || @name).to_sym
+      (@options[:store_as] || @name).to_s
     end
   end
 end

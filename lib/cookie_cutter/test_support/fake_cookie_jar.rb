@@ -32,7 +32,7 @@ module CookieCutter
         if args.any?
           cookies = args.first
           cookies.keys.each do |cookie_name|
-            self[cookie_name] = { value: cookies[cookie_name] }
+            self[cookie_name.to_s] = { value: cookies[cookie_name] }
           end
         end
       end

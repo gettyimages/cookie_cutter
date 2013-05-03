@@ -9,7 +9,7 @@ module CookieCutter
 
       attr_reader :cookie_name
       def store_as(name)
-        @cookie_name = name
+        @cookie_name = name.to_s
       end
 
       attr_reader :cookie_domain
