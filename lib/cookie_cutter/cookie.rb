@@ -101,7 +101,11 @@ module CookieCutter
     end
 
     def value
-      @cookie_jar[cookie_name]
+      value = @cookie_jar[cookie_name]
+      #if the value is a hash, we need to dup it so that we are not manipulating the original instance
+      #we need to do this because a rails cookie_jar hangs onto the original reference in order to detect value changes
+      value = value.dup if value.is_a?(Hash)
+      value
     end
 
     def value=(val)
