@@ -4,15 +4,17 @@ module CookieCutter
   module Cookie
     module ClassMethods
       def find(request)
-        new(request.cookie_jar)
+        new(request.cookie_jar, secure_request: request.scheme == 'https')
       end
 
       attr_reader :cookie_name
+
       def store_as(name)
         @cookie_name = name
       end
 
       attr_reader :cookie_domain
+
       def domain(domain_value)
         @cookie_domain = domain_value
         add_handler do |cookie|
@@ -21,6 +23,7 @@ module CookieCutter
       end
 
       attr_reader :cookie_lifetime
+
       def lifetime(seconds)
         @cookie_lifetime = seconds
         add_handler do |cookie|
@@ -36,7 +39,9 @@ module CookieCutter
       def secure_requests_only
         @secure = true
         add_handler do |cookie|
-          cookie[:secure] = true
+          if cookie[:secure_request]
+            cookie[:secure] = true
+          end
         end
       end
 
@@ -50,11 +55,13 @@ module CookieCutter
           cookie[:httponly] = true
         end
       end
+
       alias_method :httponly, :http_only
 
       def http_only?
         @http_only ? true : false
       end
+
       alias_method :httponly?, :http_only?
 
       def has_attribute(attribute_name, options={})
@@ -96,8 +103,13 @@ module CookieCutter
       klass.extend ClassMethods
     end
 
-    def initialize(cookie_jar)
+    def initialize(cookie_jar, options={})
       @cookie_jar = cookie_jar
+      @secure_request = options[:secure_request]
+    end
+
+    def secure_request?
+      @secure_request.nil? ? true : @secure_request
     end
 
     def value
@@ -109,7 +121,7 @@ module CookieCutter
     end
 
     def value=(val)
-      cookie = { value: val }
+      cookie = {value: val, secure_request: secure_request?}
       self.class.add_options(cookie)
       @cookie_jar[cookie_name] = cookie
     end

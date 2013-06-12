@@ -91,10 +91,23 @@ describe CookieCutter::Base do
         store_as :cwsro
         secure_requests_only
       end
-      cookie = CookieWithSecureRequestsOnly.new(cookie_jar)
+      options = { secure_request: true }
+      cookie = CookieWithSecureRequestsOnly.new(cookie_jar, options)
       cookie.value = "my value"
       cookie_jar.metadata_for(:cwsro)[:secure].should be_true
     end
+
+    it 'ignores secure_requests_only if set from non-secure url scheme' do
+      class CookieWithSecureRequestsOnly < CookieCutter::Base
+        store_as :cwsro
+        secure_requests_only
+      end
+      options = { secure_request: false }
+      cookie = CookieWithSecureRequestsOnly.new(cookie_jar, options)
+      cookie.value = "my value"
+      cookie_jar.metadata_for(:cwsro)[:secure].should be_nil
+    end
+
   end
   describe 'http_only' do
     it 'defaults to being accessible to client scripts (i.e. not http_only)' do
