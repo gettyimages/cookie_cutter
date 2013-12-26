@@ -3,8 +3,9 @@ require 'cookie_cutter/cookie_attribute'
 module CookieCutter
   module Cookie
     module ClassMethods
-      def find(request)
-        new(request.cookie_jar, secure_request: request.scheme == 'https')
+      def find(request, options={})
+        options[:secure_request] = request.scheme == 'https' unless options[:secure_request]
+        new(request.cookie_jar, options)
       end
 
       attr_reader :cookie_name
@@ -106,6 +107,7 @@ module CookieCutter
     def initialize(cookie_jar, options={})
       @cookie_jar = cookie_jar
       @secure_request = options[:secure_request]
+      @cookie_name = options[:cookie_name] || self.class.cookie_name
     end
 
     def secure_request?
@@ -133,7 +135,7 @@ module CookieCutter
     end
 
     def cookie_name
-      self.class.cookie_name
+      @cookie_name
     end
 
     def secure?

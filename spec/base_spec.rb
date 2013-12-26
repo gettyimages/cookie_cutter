@@ -3,6 +3,9 @@ require 'cookie_cutter'
 require 'cookie_cutter/test_support'
 require 'active_support/core_ext'
 
+class EmptyValuedCookie < CookieCutter::Base
+end
+
 class SingleValuedCookie < CookieCutter::Base
   store_as :svc
 end
@@ -22,9 +25,23 @@ end
 
 describe CookieCutter::Base do
   let(:cookie_jar) { CookieCutter::TestSupport::FakeCookieJar.new }
-  it 'should not not update the cookie_jar when no value is set' do
+  it 'should not update the cookie_jar when no value is set' do
     SingleValuedCookie.new(cookie_jar)
     cookie_jar.to_hash.should be_empty
+  end
+  describe 'name' do
+    it 'uses defined cookie name' do
+      request = double('http_request', scheme: 'https', cookie_jar: cookie_jar)
+      cookie = SingleValuedCookie.find(request)
+      cookie.cookie_name.should == :svc
+    end
+    legacy_cookie = :getty_cookie
+    let(:legacy_cookie_jar) { CookieCutter::TestSupport::FakeCookieJar.new({cookie_name: legacy_cookie}) }
+    it 'uses cookie name in cookie_jar' do
+      request = double('http_request', scheme: 'https', cookie_jar: legacy_cookie_jar)
+      cookie = EmptyValuedCookie.find(request, {cookie_name: legacy_cookie})
+      cookie.cookie_name.should == legacy_cookie
+    end
   end
   describe 'domain' do
     it 'does not set domain if not given' do
@@ -160,8 +177,8 @@ describe CookieCutter::Base do
       multi_valued_cookie.value2.should == "myval2"
     end
     it "privatizes the singular 'value' getter and setter" do
-      expect { multi_valued_cookie.value = "myval"}.should raise_error(NoMethodError)
-      expect { multi_valued_cookie.value}.should raise_error(NoMethodError)
+      expect { multi_valued_cookie.value = "myval"}.to raise_error(NoMethodError)
+      expect { multi_valued_cookie.value }.to raise_error(NoMethodError)
     end
     it "can override stored attribute name with :store_as option" do
       multi_valued_cookie.value2 = "myval2"
