@@ -107,7 +107,7 @@ module CookieCutter
     def initialize(cookie_jar, options={})
       @cookie_jar = cookie_jar
       @secure_request = options[:secure_request]
-      @cookie_name = options[:cookie_name] || self.class.cookie_name
+      @cookie_name = (options[:cookie_name] || self.class.cookie_name).downcase
     end
 
     def secure_request?

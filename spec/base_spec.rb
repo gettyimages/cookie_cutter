@@ -17,12 +17,6 @@ class MultiValuedCookie < CookieCutter::Base
   has_attribute :value2, store_as: 'val2'
 end
 
-class MyMixedCaseCookie < CookieCutter::Base
-  store_as :my_uppercase_cookie
-
-  has_attribute :mixed_case_key, store_as: 'mixedcasekey'
-end
-
 describe CookieCutter::Base do
   let(:cookie_jar) { CookieCutter::TestSupport::FakeCookieJar.new }
   it 'should not update the cookie_jar when no value is set' do
@@ -41,6 +35,11 @@ describe CookieCutter::Base do
       request = double('http_request', scheme: 'https', cookie_jar: legacy_cookie_jar)
       cookie = EmptyValuedCookie.find(request, {cookie_name: legacy_cookie})
       cookie.cookie_name.should == legacy_cookie
+    end
+    it 'should store the cookie with a lower-case name' do
+      request = double('http_request', scheme: 'https', cookie_jar: cookie_jar)
+      cookie = EmptyValuedCookie.find(request, {cookie_name: 'ABCabc1234'})
+      cookie.cookie_name.should == 'abcabc1234'
     end
   end
   describe 'domain' do
