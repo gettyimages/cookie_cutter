@@ -4,8 +4,8 @@ module CookieCutter
   module TestSupport
     module Stubs
       module Finders
-        def find(*args)
-          new(TestSupport::FakeCookieJar.find)
+        def find(request, options={})
+          new(TestSupport::FakeCookieJar.find, options)
         end
       end
       
