@@ -50,6 +50,14 @@ module CookieCutter
         @secure ? true : false
       end
 
+      def multi_valued
+        @multi_valued = true
+      end
+
+      def multi_valued?
+        @multi_valued || attributes.any?
+      end
+
       def http_only
         @http_only = true
         add_handler do |cookie|

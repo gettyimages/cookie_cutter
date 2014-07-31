@@ -17,6 +17,11 @@ class MultiValuedCookie < CookieCutter::Base
   has_attribute :value2, store_as: 'val2'
 end
 
+class MultiValuedCookieWithoutAttribute < CookieCutter::Base
+  store_as :mvcwa
+  multi_valued
+end
+
 describe CookieCutter::Base do
   let(:cookie_jar) { CookieCutter::TestSupport::FakeCookieJar.new }
   it 'should not update the cookie_jar when no value is set' do
@@ -161,6 +166,9 @@ describe CookieCutter::Base do
       single_value_cookie = SingleValuedCookie.new(CookieCutter::TestSupport::FakeCookieJar.new({ svc: "preset value" }))
       single_value_cookie.value.should == "preset value"
     end
+    it 'is not multivalued' do
+      SingleValuedCookie.multi_valued?.should be_false
+    end
   end
   describe 'multi-valued cookie' do
     let(:multi_valued_cookie) { MultiValuedCookie.new(cookie_jar) }
@@ -183,6 +191,9 @@ describe CookieCutter::Base do
       multi_valued_cookie.value2 = "myval2"
       cookie_jar[:mvc][:val2].should == "myval2"
     end
+    it "is multivalued" do
+      MultiValuedCookie.multi_valued?.should be_true
+    end
     describe 'attribute metadata' do
       it "should provide attributes array" do
         MultiValuedCookie.attributes.length.should == 2
@@ -195,6 +206,11 @@ describe CookieCutter::Base do
         MultiValuedCookie.attributes.find{|a| a.name == :value1}.storage_key.should == :value1
         MultiValuedCookie.attributes.find{|a| a.name == :value2}.storage_key.should == :val2
       end
+    end
+  end
+  describe 'multi-valued cookie without attribute' do
+    it 'is multivalued' do
+      MultiValuedCookieWithoutAttribute.multi_valued?.should be_true
     end
   end
 end
