@@ -15,8 +15,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = CookieCutter::VERSION
 
-  gem.add_development_dependency 'activesupport' #for date helpers
+  gem.add_development_dependency 'activesupport', '~> 3.2.22' #for date helpers
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec'
-  gem.add_development_dependency 'rspec-mocks'
+  gem.add_development_dependency 'rspec', '~> 2.14.1'
+  gem.add_development_dependency 'rspec-mocks', '~> 2.14.6'
 end

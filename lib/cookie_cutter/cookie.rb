@@ -1,4 +1,5 @@
 require 'cookie_cutter/cookie_attribute'
+require 'cookie_cutter/cookie_registry'
 
 module CookieCutter
   module Cookie
@@ -12,6 +13,7 @@ module CookieCutter
 
       def store_as(name)
         @cookie_name = name
+        CookieRegistry.instance.register self
       end
 
       attr_reader :cookie_domain
